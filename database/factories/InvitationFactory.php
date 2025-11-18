@@ -1,0 +1,33 @@
+<?php
+
+namespace Database\Factories;
+
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
+use App\Models\Invitation;
+use App\Models\Event;
+
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Invitation>
+ */
+class InvitationFactory extends Factory
+{
+    protected $model = Invitation::class;
+    /**
+     * Define the model's default state.
+     *
+     * @return array<string, mixed>
+     */
+    public function definition(): array
+    {
+        $event = Event::factory()->create();
+        return [
+            'external_hash' => Str::random(8),
+            'external_id' => Str::random(8),
+            'guest_count' => $this->faker->numberBetween(1, 10),
+            'sector' => $this->faker->randomElement(['General', 'VIP', 'Platea']),
+            'event_id' => $event->id,
+        ];
+
+    }
+}
