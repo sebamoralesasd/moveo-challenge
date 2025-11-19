@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'invitations' => [
+        'base_url' => env('INVITATION_BASE_URL'),
+        'token' => env('INVITATION_BEARER_TOKEN'),
+    ],
+
 ];
