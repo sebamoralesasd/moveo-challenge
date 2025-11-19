@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Models\Ticket;
 use App\Models\Invitation;
+use App\Models\Ticket;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);

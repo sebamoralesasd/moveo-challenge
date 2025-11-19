@@ -11,9 +11,7 @@ use Illuminate\Support\Str;
 
 class InvitationRedemptionService
 {
-    public function __construct(protected ExternalInvitationService $external)
-    {
-    }
+    public function __construct(protected ExternalInvitationService $external) {}
 
     public function redeem(string $hash): Invitation
     {
@@ -24,6 +22,7 @@ class InvitationRedemptionService
 
         Log::info("Invitation not found locally. Fetching from external API for hash: {$hash}");
         $data = $this->external->getInvitation($hash);
+
         return DB::transaction(function () use ($hash, $data) {
             $existing = Invitation::where('external_hash', $hash)->lockForUpdate()->first();
             if ($existing) {
@@ -41,7 +40,7 @@ class InvitationRedemptionService
                 'event_id' => $event->id,
             ]);
 
-            //TODO: move to a background job
+            // TODO: move to a background job
             for ($i = 0; $i < $invitation->guest_count; $i++) {
                 Ticket::create([
                     'invitation_id' => $invitation->id,
@@ -50,6 +49,7 @@ class InvitationRedemptionService
             }
 
             Log::info("Successfully created invitation and tickets for hash: {$hash}");
+
             return $invitation;
         });
     }

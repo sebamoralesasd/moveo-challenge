@@ -13,8 +13,11 @@ use Illuminate\Support\Facades\Log;
 class ExternalInvitationService
 {
     private const int CACHE_TTL = 600;
+
     private const int TIMEOUT_SECONDS = 5;
+
     private const int RETRY_TIMES = 3;
+
     private const int RETRY_SLEEP_MS = 200;
 
     /**
@@ -37,9 +40,10 @@ class ExternalInvitationService
                     ->throw();
 
                 Log::info("Successfully fetched invitation [{$hash}]");
+
                 return $response->json();
             } catch (\Exception $e) {
-                Log::error("Failed to fetch invitation [{$hash}]: " . $e->getMessage());
+                Log::error("Failed to fetch invitation [{$hash}]: ".$e->getMessage());
                 throw $e;
             }
         });

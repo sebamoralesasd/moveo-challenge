@@ -9,7 +9,7 @@ class TicketValidationService
     public function validateTicket(string $code): Ticket
     {
         $ticket = Ticket::where('code', $code)->first();
-        if (!$ticket) {
+        if (! $ticket) {
             throw new \Exception("Ticket {$code} not found");
         }
         if ($ticket->status === 'used') {
