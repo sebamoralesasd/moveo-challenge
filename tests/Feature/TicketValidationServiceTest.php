@@ -5,21 +5,20 @@ namespace Tests\Feature;
 use App\Models\Ticket;
 use App\Services\TicketValidationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 uses(RefreshDatabase::class);
 
 it('raises an error if the ticket does not exist', function () {
     $code = 'INVALID';
-
     $service = app(TicketValidationService::class);
-    expect(fn () => $service->validateTicket($code))
-        ->toThrow(ModelNotFoundException::class);
-});
 
+    expect(fn () => $service->validateTicket($code))
+        ->toThrow(\Exception::class, "Ticket {$code} not found");
+});
 it('raises an error if the ticket is already used', function () {
     $ticket = Ticket::factory()->create(['status' => 'used']);
     $service = app(TicketValidationService::class);
+
     expect(fn () => $service->validateTicket($ticket->code))
         ->toThrow(\Exception::class, "Ticket {$ticket->code} was already used");
 });

@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\Invitation;
-use App\Models\Ticket;
 use App\Services\InvitationRedemptionService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery\MockInterface;

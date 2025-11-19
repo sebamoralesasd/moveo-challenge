@@ -8,8 +8,10 @@ class TicketValidationService
 {
     public function validateTicket(string $code): Ticket
     {
-        $ticket = Ticket::where('code', $code)->firstOrFail();
-
+        $ticket = Ticket::where('code', $code)->first();
+        if (!$ticket) {
+            throw new \Exception("Ticket {$code} not found");
+        }
         if ($ticket->status === 'used') {
             throw new \Exception("Ticket {$ticket->code} was already used");
         }
