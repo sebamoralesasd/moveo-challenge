@@ -3,9 +3,11 @@
 namespace Tests\Feature;
 
 use App\Models\Ticket;
+use App\Services\TicketService;
 use App\Services\TicketValidationService;
-use Mockery\MockInterface;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Mockery\MockInterface;
 
 uses(RefreshDatabase::class);
 
@@ -23,7 +25,7 @@ it('returns error when validation fails', function () {
     $response = $this->postJson("/api/tickets/{$code}");
     $response->assertStatus(422)
         ->assertJson([
-            'error' => $errorMessage
+            'error' => $errorMessage,
         ]);
 });
 
@@ -31,7 +33,7 @@ it('validates ticket successfully', function () {
     $code = 'valid-ticket-code';
     $ticket = Ticket::factory()->make([
         'code' => $code,
-        'used_at' => now()
+        'used_at' => now(),
     ]);
 
     $this->mock(TicketValidationService::class, function (MockInterface $mock) use ($code, $ticket) {
@@ -45,6 +47,54 @@ it('validates ticket successfully', function () {
     $response->assertStatus(201)
         ->assertJson([
             'status' => "Ticket {$code} was validated successfully.",
-            'used_at' => $ticket->used_at->toISOString()
+            'used_at' => $ticket->used_at->toISOString(),
         ]);
+});
+
+it('returns used tickets for an event', function () {
+    $eventId = 1;
+    $ticket = Ticket::factory()->make();
+    $paginator = new LengthAwarePaginator(collect([$ticket]), 1, 10);
+
+    $this->mock(TicketService::class, function (MockInterface $mock) use ($eventId, $paginator) {
+        $mock->shouldReceive('getUsedTicketsForEvent')
+            ->once()
+            ->with($eventId, 10)
+            ->andReturn($paginator);
+    });
+
+    $response = $this->getJson("/api/events/{$eventId}/tickets/used");
+
+    $response->assertStatus(200)
+        ->assertJsonStructure([
+            'data',
+            'current_page',
+            'per_page',
+            'total',
+        ]);
+});
+
+it('returns used tickets for an event with custom page size', function () {
+    $eventId = 1;
+    $perPage = 5;
+    $ticket = Ticket::factory()->make();
+    $paginator = new LengthAwarePaginator(collect([$ticket]), 1, $perPage);
+
+    $this->mock(TicketService::class, function (MockInterface $mock) use ($eventId, $perPage, $paginator) {
+        $mock->shouldReceive('getUsedTicketsForEvent')
+            ->once()
+            ->with($eventId, $perPage)
+            ->andReturn($paginator);
+    });
+
+    $response = $this->getJson("/api/events/{$eventId}/tickets/used?per_page={$perPage}");
+
+    $response->assertStatus(200)
+        ->assertJsonStructure([
+            'data',
+            'current_page',
+            'per_page',
+            'total',
+        ])
+        ->assertJsonPath('per_page', $perPage);
 });

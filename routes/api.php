@@ -11,3 +11,4 @@ Route::get('/user', function (Request $request) {
 
 Route::post('/invitations/{hash}', [InvitationController::class, 'redeem']);
 Route::post('/tickets/{code}', [TicketController::class, 'validate']);
+Route::get('/events/{eventId}/tickets/used', [TicketController::class, 'getUsed']);
