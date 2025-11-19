@@ -2,19 +2,19 @@
 
 ## Build & Test
 - **Setup**: `composer setup` (installs, migrates, builds assets)
-- **Test**: `php artisan test` (Pest) or `composer test`
+- **Test**: `php artisan test` (Pest)
 - **Single Test**: `php artisan test --filter <TestName>`
-- **Format/Lint**: `vendor/bin/pint` and `vendor/bin/php-cs-fixer fix`
+- **Lint/Fix**: `vendor/bin/pint` or `vendor/bin/php-cs-fixer fix`
 
 ## Code Standards
-- **PHP**: 8.2+. Use `declare(strict_types=1);` in services/classes.
-- **Structure**: Laravel conventions (MVC). Keep logic in Services/Actions.
-- **Naming**: `PascalCase` classes, `camelCase` methods/vars.
-- **Types**: Strict typing for params, returns, and properties.
-- **DB**: Use Factories for tests. No hardcoded IDs.
+- **PHP**: 8.2+. Adhere to Laravel conventions (MVC).
+- **Organization**: Logic in Services/Actions, Controllers slim.
+- **Naming**: `PascalCase` classes, `camelCase` methods/variables.
+- **Database**: Use Eloquent Models & Factories. No hardcoded IDs.
+- **Types**: Use proper type hinting for params/returns where possible.
 
 ## Workflow
-- **Dependencies**: Check `composer.json` before assuming libs.
-- **Safety**: Exceptions over `false`/`null`. Validate inputs.
-- **Testing**: Write Feature/Unit tests using Pest.
-- **Context**: Search existing patterns (e.g., `grep` services) before coding.
+- **Dependencies**: Verify in `composer.json` before using libraries.
+- **Safety**: Validate all inputs. Prefer Exceptions over null/false.
+- **Testing**: Create Feature/Unit tests using Pest.
+- **Context**: Search codebase patterns before implementing new features.
