@@ -9,6 +9,7 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::post('/invitations/{hash}', [InvitationController::class, 'redeem']);
+Route::get('/invitations', [InvitationController::class, 'index']);
+Route::post('/invitations/{hash}/redeem', [InvitationController::class, 'redeem']);
 Route::post('/tickets/{code}', [TicketController::class, 'validate']);
 Route::get('/events/{eventId}/tickets/used', [TicketController::class, 'getUsed']);

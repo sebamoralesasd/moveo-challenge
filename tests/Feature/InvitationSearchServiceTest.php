@@ -12,7 +12,7 @@ uses(RefreshDatabase::class);
 it('returns all invitations when no filters provided', function () {
     Invitation::factory()->count(3)->create();
 
-    $service = new InvitationSearchService();
+    $service = new InvitationSearchService;
     $results = $service->search([]);
 
     expect($results->items())->toHaveCount(3);
@@ -21,7 +21,7 @@ it('returns all invitations when no filters provided', function () {
 it('paginates results correctly', function () {
     Invitation::factory()->count(5)->create();
 
-    $service = new InvitationSearchService();
+    $service = new InvitationSearchService;
     $results = $service->search([], 2);
 
     expect($results->perPage())->toBe(2);
@@ -36,7 +36,7 @@ it('filters invitations by event', function () {
     $invitation1 = Invitation::factory()->create(['event_id' => $event1->id]);
     Invitation::factory()->create(['event_id' => $event2->id]);
 
-    $service = new InvitationSearchService();
+    $service = new InvitationSearchService;
     $results = $service->search(['event_id' => $event1->id]);
 
     expect($results->items())->toHaveCount(1);
@@ -47,7 +47,7 @@ it('filters invitations by sector', function () {
     Invitation::factory()->create(['sector' => 'VIP']);
     $invitationTarget = Invitation::factory()->create(['sector' => 'General']);
 
-    $service = new InvitationSearchService();
+    $service = new InvitationSearchService;
     $results = $service->search(['sector' => 'General']);
 
     expect($results->items())->toHaveCount(1);
@@ -63,7 +63,7 @@ it('filters invitations by date range', function () {
     Invitation::factory()->create(['created_at' => $oldDate]);
     Invitation::factory()->create(['created_at' => $futureDate]);
 
-    $service = new InvitationSearchService();
+    $service = new InvitationSearchService;
     $results = $service->search([
         'date_from' => $targetDate->subDay()->toDateString(),
         'date_to' => $targetDate->addDay()->toDateString(),
