@@ -6,6 +6,7 @@ use App\Models\Event;
 use App\Models\Invitation;
 use App\Models\Ticket;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class InvitationRedemptionService
@@ -21,7 +22,7 @@ class InvitationRedemptionService
             return $invitation;
         }
 
-        // fetch to external api if it doesnt exist
+        Log::info("Invitation not found locally. Fetching from external API for hash: {$hash}");
         $data = $this->external->getInvitation($hash);
         return DB::transaction(function () use ($hash, $data) {
             $existing = Invitation::where('external_hash', $hash)->lockForUpdate()->first();
@@ -48,6 +49,7 @@ class InvitationRedemptionService
                 ]);
             }
 
+            Log::info("Successfully created invitation and tickets for hash: {$hash}");
             return $invitation;
         });
     }

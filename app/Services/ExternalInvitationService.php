@@ -27,8 +27,8 @@ class ExternalInvitationService
         $token = config('services.invitations.token');
         $cacheKey = "invitation:{$hash}";
 
-        // Use Cache::remember to serve cached data if available
         return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($baseUrl, $token, $hash) {
+            Log::info("Fetching external invitation for hash: {$hash}");
             try {
                 $response = Http::withToken($token)
                     ->timeout(self::TIMEOUT_SECONDS)
@@ -36,6 +36,7 @@ class ExternalInvitationService
                     ->get("{$baseUrl}/{$hash}")
                     ->throw();
 
+                Log::info("Successfully fetched invitation [{$hash}]");
                 return $response->json();
             } catch (\Exception $e) {
                 Log::error("Failed to fetch invitation [{$hash}]: " . $e->getMessage());
