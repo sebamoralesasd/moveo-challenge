@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\InvitationStatus;
 use App\Jobs\GenerateInvitationTickets;
 use App\Models\Event;
 use App\Models\Invitation;
@@ -14,10 +15,11 @@ use Mockery\MockInterface;
 
 uses(RefreshDatabase::class);
 
-it('returns existing invitation without calling external service', function () {
+it('returns existing completed invitation without calling external service', function () {
     $hash = 'hash';
     $existingInvitation = Invitation::factory()->create([
         'external_id' => $hash,
+        'status' => InvitationStatus::COMPLETED,
     ]);
 
     $this->mock(ExternalInvitationService::class, function (MockInterface $mock) {
@@ -52,10 +54,11 @@ it('throws exception and creates nothing when external service fails', function 
 it('creates invitation and dispatches ticket generation job', function () {
     Queue::fake();
 
+    $eventName = 'New Concert 2025';
     $hash = 'hash';
     $externalData = [
         'invitation_id' => $hash,
-        'event_name' => 'New Concert 2025',
+        'event_name' => $eventName,
         'event_date' => '2025-12-31 20:00:00',
         'guest_count' => 2,
         'sector' => 'VIP',
@@ -71,11 +74,12 @@ it('creates invitation and dispatches ticket generation job', function () {
     $service = app(InvitationRedemptionService::class);
     $result = $service->redeem($hash);
 
-    $event = Event::where('name', 'New Concert 2025')->first();
+    $event = Event::where('name', $eventName)->first();
     expect($event)->not->toBeNull();
 
     expect($result->event_id)->toBe($event->id)
         ->and($result->external_id)->toBe($hash)
+        ->and($result->status)->toBe(InvitationStatus::PENDING)
         ->and($result->guest_count)->toBe(2);
 
     Queue::assertPushed(GenerateInvitationTickets::class, function ($job) use ($result) {
@@ -113,4 +117,29 @@ it('uses existing event if name matches', function () {
 
     expect(Event::count())->toBe(1)
         ->and($result->event_id)->toBe($existingEvent->id);
+});
+
+it('re-dispatches ticket generation for existing failed invitation', function () {
+    Queue::fake();
+
+    $hash = 'hash';
+    $existingInvitation = Invitation::factory()->create([
+        'external_id' => $hash,
+        'status' => InvitationStatus::FAILED,
+        'guest_count' => 5,
+    ]);
+
+    $this->mock(ExternalInvitationService::class, function (MockInterface $mock) {
+        $mock->shouldNotReceive('getInvitation');
+    });
+
+    $service = app(InvitationRedemptionService::class);
+    $result = $service->redeem($hash);
+
+    expect($result->id)->toBe($existingInvitation->id)
+        ->and($result->status)->toBe(InvitationStatus::FAILED);
+
+    Queue::assertPushed(GenerateInvitationTickets::class, function ($job) use ($existingInvitation) {
+        return $job->invitation->id === $existingInvitation->id;
+    });
 });

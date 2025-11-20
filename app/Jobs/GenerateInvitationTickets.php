@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Enums\InvitationStatus;
 use App\Models\Invitation;
 use App\Models\Ticket;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -27,6 +28,14 @@ class GenerateInvitationTickets implements ShouldQueue
      */
     public function handle(): void
     {
+        // Ensuring correctness
+        if ($this->invitation->status === InvitationStatus::COMPLETED) {
+            return;
+        }
+
+        $this->invitation->status = InvitationStatus::PROCESSING;
+        $this->invitation->save();
+
         $guest_count = $this->invitation->guest_count;
 
         Log::info("Generating {$guest_count} tickets for invitation {$this->invitation->external_id}");
@@ -44,12 +53,16 @@ class GenerateInvitationTickets implements ShouldQueue
         }
 
         Ticket::insert($tickets);
+
+        $this->invitation->status = InvitationStatus::COMPLETED;
+        $this->invitation->save();
         Log::info("{$guest_count} tickets for invitation {$this->invitation->external_id} generated successfully.");
     }
 
     public function failed(Throwable $ex)
     {
         Log::error("Failed to generate tickets for {$this->invitation->external_id}: " . $ex->getMessage());
-        // TODO: update invitation as failed?
+        $this->invitation->status = InvitationStatus::FAILED;
+        $this->invitation->save();
     }
 }

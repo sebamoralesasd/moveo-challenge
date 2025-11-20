@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\InvitationStatus;
 use App\Jobs\GenerateInvitationTickets;
 use App\Models\Invitation;
 use App\Models\Ticket;
@@ -19,6 +20,15 @@ it('generates correct number of tickets for invitation', function () {
     $job->handle();
 
     expect(Ticket::count())->toBe(3);
+});
+
+it('updates invitation status as completed', function () {
+    $invitation = Invitation::factory()->create(['guest_count' => 3]);
+
+    $job = new GenerateInvitationTickets($invitation);
+    $job->handle();
+
+    expect($invitation->status)->toBe(InvitationStatus::COMPLETED);
 });
 
 it('creates tickets with correct invitation_id', function () {
@@ -44,7 +54,7 @@ it('does not create duplicate tickets if run multiple times', function () {
     $job2 = new GenerateInvitationTickets($invitation);
     $job2->handle();
 
-    expect(Ticket::count())->toBe(4);
+    expect(Ticket::count())->toBe(2);
 });
 
 it('handles zero guest count', function () {

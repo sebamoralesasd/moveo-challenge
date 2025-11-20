@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\InvitationStatus;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 use App\Models\Invitation;
@@ -26,6 +27,7 @@ class InvitationFactory extends Factory
             'guest_count' => $this->faker->numberBetween(1, 10),
             'sector' => $this->faker->randomElement(['General', 'VIP', 'Platea']),
             'event_id' => $event->id,
+            'status' => InvitationStatus::PENDING->value,
         ];
 
     }

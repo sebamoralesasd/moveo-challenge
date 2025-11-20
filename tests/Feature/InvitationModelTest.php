@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\InvitationStatus;
 use App\Models\Event;
 use App\Models\Invitation;
 use App\Models\Ticket;
@@ -15,8 +16,9 @@ it('creates an Invitation with the factory and has valid attributes', function (
     expect($invitation)->toBeInstanceOf(Invitation::class);
     expect($invitation->external_id)->not->toBeEmpty();
     expect($invitation->guest_count)->not->toBeEmpty();
-    // TODO: validate enum
     expect($invitation->sector)->not->toBeEmpty();
+    expect($invitation->status)->not->toBeEmpty();
+    expect($invitation->status)->toBeInstanceOf(InvitationStatus::class);
 });
 
 it('persists an Invitation via the factory and exists in the database', function () {
