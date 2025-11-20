@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\UserRole;
 use App\Models\Ticket;
 use App\Services\TicketService;
 use App\Services\TicketValidationService;
@@ -14,7 +15,7 @@ use Mockery\MockInterface;
 uses(RefreshDatabase::class);
 
 it('returns error when validation fails', function () {
-    Passport::actingAs(User::factory()->create(['role' => 'checker']));
+    Passport::actingAs(User::factory()->create(['role' => UserRole::CHECKER->value]));
     $code = 'invalid-code';
     $errorMessage = "Ticket with code {$code} not found";
 
@@ -33,7 +34,7 @@ it('returns error when validation fails', function () {
 });
 
 it('validates ticket successfully', function () {
-    Passport::actingAs(User::factory()->create(['role' => 'checker']));
+    Passport::actingAs(User::factory()->create(['role' => UserRole::CHECKER->value]));
     $code = 'valid-ticket-code';
     $ticket = Ticket::factory()->make([
         'code' => $code,
@@ -56,7 +57,7 @@ it('validates ticket successfully', function () {
 });
 
 it('returns used tickets for an event', function () {
-    Passport::actingAs(User::factory()->create(['role' => 'admin']));
+    Passport::actingAs(User::factory()->create(['role' => UserRole::ADMIN->value]));
     $eventId = 1;
     $ticket = Ticket::factory()->make();
     $paginator = new LengthAwarePaginator(collect([$ticket]), 1, 10);
@@ -80,7 +81,7 @@ it('returns used tickets for an event', function () {
 });
 
 it('returns used tickets for an event with custom page size', function () {
-    Passport::actingAs(User::factory()->create(['role' => 'admin']));
+    Passport::actingAs(User::factory()->create(['role' => UserRole::ADMIN->value]));
     $eventId = 1;
     $perPage = 5;
     $ticket = Ticket::factory()->make();

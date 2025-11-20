@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\UserRole;
 use App\Models\User;
 use App\Models\Ticket;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -8,7 +9,7 @@ use Laravel\Passport\Passport;
 uses(RefreshDatabase::class);
 
 test('admin can access invitations', function () {
-    $user = User::factory()->create(['role' => 'admin']);
+    $user = User::factory()->create(['role' => UserRole::ADMIN->value]);
     Passport::actingAs($user);
 
     $this->getJson('/api/invitations')
@@ -16,7 +17,7 @@ test('admin can access invitations', function () {
 });
 
 test('checker cannot access invitations', function () {
-    $user = User::factory()->create(['role' => 'checker']);
+    $user = User::factory()->create(['role' => UserRole::CHECKER->value]);
     Passport::actingAs($user);
 
     $this->getJson('/api/invitations')
@@ -24,7 +25,7 @@ test('checker cannot access invitations', function () {
 });
 
 test('checker can validate tickets', function () {
-    $user = User::factory()->create(['role' => 'checker']);
+    $user = User::factory()->create(['role' => UserRole::CHECKER->value]);
     Passport::actingAs($user);
 
     $ticket = Ticket::factory()->create(['status' => 'unused']);
@@ -34,7 +35,7 @@ test('checker can validate tickets', function () {
 });
 
 test('admin cannot validate tickets', function () {
-    $user = User::factory()->create(['role' => 'admin']);
+    $user = User::factory()->create(['role' => UserRole::ADMIN->value]);
     Passport::actingAs($user);
 
     $ticket = Ticket::factory()->create();

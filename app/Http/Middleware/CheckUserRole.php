@@ -15,7 +15,7 @@ class CheckUserRole
      */
     public function handle(Request $request, Closure $next, string $role): Response
     {
-        if (! $request->user() || $request->user()->role !== $role) {
+        if (! $request->user() || $request->user()->role->value !== $role) {
             return response()->json(['message' => 'Forbidden'], 403);
         }
         return $next($request);

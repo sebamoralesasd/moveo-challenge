@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Passport\ClientRepository;
@@ -18,7 +19,7 @@ test('user can register', function () {
         'name' => 'Test User',
         'email' => 'test@example.com',
         'password' => 'password',
-        'role' => 'admin',
+        'role' => UserRole::ADMIN->value,
     ];
     $response = $this->postJson('/api/register', $data);
     $response->assertStatus(201)
@@ -28,7 +29,7 @@ test('user can register', function () {
         ]);
     $this->assertDatabaseHas('users', [
         'email' => 'test@example.com',
-        'role' => 'admin',
+        'role' => UserRole::ADMIN->value,
     ]);
 });
 

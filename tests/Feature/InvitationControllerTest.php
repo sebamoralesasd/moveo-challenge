@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\UserRole;
 use App\Models\Invitation;
 use App\Services\InvitationRedemptionService;
 use App\Services\InvitationSearchService;
@@ -15,7 +16,7 @@ uses(RefreshDatabase::class);
 
 // GET /invitations
 it('returns invitations list', function () {
-    Passport::actingAs(User::factory()->create(['role' => 'admin']));
+    Passport::actingAs(User::factory()->create(['role' => UserRole::ADMIN->value]));
     $invitations = Invitation::factory()->count(3)->make();
     $paginator = new LengthAwarePaginator($invitations, 3, 10);
 
@@ -41,7 +42,7 @@ it('returns invitations list', function () {
 });
 
 it('passes filters to search service', function () {
-    Passport::actingAs(User::factory()->create(['role' => 'admin']));
+    Passport::actingAs(User::factory()->create(['role' => UserRole::ADMIN->value]));
     $invitations = Invitation::factory()->count(1)->make();
     $paginator = new LengthAwarePaginator($invitations, 1, 10);
     $eventId = 123;
