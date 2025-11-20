@@ -21,6 +21,14 @@ it('persists a Ticket via the factory and exists in the database', function () {
     $this->assertDatabaseHas('tickets', ['id' => $ticket->id]);
 });
 
+it('creates tickets with unique codes', function () {
+    $ticket_codes = Ticket::factory()->count(5)->create()->pluck('code')->toArray();
+
+    expect($ticket_codes)->toHaveCount(5);
+    expect(count($ticket_codes))->toBe(count(array_unique($ticket_codes)));
+});
+
+
 // Relationships
 it('belongs to an Invitation', function () {
     $invitation = Invitation::factory()->create();

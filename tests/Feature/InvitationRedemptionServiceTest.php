@@ -2,12 +2,14 @@
 
 namespace Tests\Feature;
 
+use App\Jobs\GenerateInvitationTickets;
 use App\Models\Event;
 use App\Models\Invitation;
 use App\Models\Ticket;
 use App\Services\ExternalInvitationService;
 use App\Services\InvitationRedemptionService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Queue;
 use Mockery\MockInterface;
 
 uses(RefreshDatabase::class);
@@ -47,7 +49,9 @@ it('throws exception and creates nothing when external service fails', function 
         ->and(Event::count())->toBe(0);
 });
 
-it('creates invitation, tickets and new event successfully', function () {
+it('creates invitation and dispatches ticket generation job', function () {
+    Queue::fake();
+
     $hash = 'hash';
     $externalData = [
         'invitation_id' => $hash,
@@ -74,7 +78,9 @@ it('creates invitation, tickets and new event successfully', function () {
         ->and($result->external_id)->toBe($hash)
         ->and($result->guest_count)->toBe(2);
 
-    expect(Ticket::where('invitation_id', $result->id)->count())->toBe(2);
+    Queue::assertPushed(GenerateInvitationTickets::class, function ($job) use ($result) {
+        return $job->invitation->id === $result->id;
+    });
 });
 
 it('uses existing event if name matches', function () {
@@ -107,40 +113,4 @@ it('uses existing event if name matches', function () {
 
     expect(Event::count())->toBe(1)
         ->and($result->event_id)->toBe($existingEvent->id);
-});
-
-it('rolls back invitation creation if ticket creation fails', function () {
-    $hash = 'hash';
-    $externalData = [
-        'invitation_id' => $hash,
-        'event_name' => 'Event',
-        'event_date' => '2025-10-10 20:00:00',
-        'guest_count' => 1,
-        'sector' => 'General',
-    ];
-
-    $this->mock(ExternalInvitationService::class, function (MockInterface $mock) use ($hash, $externalData) {
-        $mock->shouldReceive('getInvitation')
-            ->once()
-            ->with($hash)
-            ->andReturn($externalData);
-    });
-
-    Ticket::creating(function ($ticket) {
-        throw new \Exception('Database error during ticket creation');
-    });
-
-    $service = app(InvitationRedemptionService::class);
-
-    try {
-        $service->redeem($hash);
-    } catch (\Exception $e) {
-        // Expected exception
-    }
-
-    expect(Invitation::where('external_id', $hash)->count())->toBe(0);
-    expect(Event::count())->toBe(0);
-
-    // Clean up model event listener to not affect other tests
-    /* Ticket::flushEventListeners(); */
 });

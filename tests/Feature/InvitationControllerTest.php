@@ -104,11 +104,16 @@ it('redeems invitation successfully', function () {
 
     $response->assertStatus(201)
         ->assertJsonPath('data.id', $invitation->id)
+        ->assertJsonPath('data.event.id', $invitation->event->id)
         ->assertJsonStructure([
             'data' => [
                 'id',
-                'tickets',
                 'external_id',
+                'event' => [
+                    'id',
+                    'name',
+                    'date',
+                ],
             ],
         ]);
 });

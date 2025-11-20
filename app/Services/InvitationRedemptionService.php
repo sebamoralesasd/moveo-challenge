@@ -2,12 +2,11 @@
 
 namespace App\Services;
 
+use App\Jobs\GenerateInvitationTickets;
 use App\Models\Event;
 use App\Models\Invitation;
-use App\Models\Ticket;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 
 class InvitationRedemptionService
 {
@@ -42,15 +41,8 @@ class InvitationRedemptionService
                 'event_id' => $event->id,
             ]);
 
-            // TODO: move to a background job
-            for ($i = 0; $i < $invitation->guest_count; $i++) {
-                Ticket::create([
-                    'invitation_id' => $invitation->id,
-                    'code' => Str::uuid(),
-                ]);
-            }
-
-            Log::info("Successfully created invitation and tickets for hash: {$hash}");
+            GenerateInvitationTickets::dispatch($invitation);
+            Log::info("Successfully created invitation for hash: {$hash}. Tickets generation queued.");
 
             return $invitation;
         });

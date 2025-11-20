@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/invitations/{hash}/redeem', [InvitationController::class, 'redeem']);
+Route::get('/invitations/{hash}', [InvitationController::class, 'getTickets']);
 
 // Admin
 Route::middleware(['auth:api', 'role:admin'])->group(function () {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Invitation;
 use App\Services\InvitationRedemptionService;
 use App\Services\InvitationSearchService;
 use Illuminate\Http\JsonResponse;
@@ -9,7 +10,9 @@ use Illuminate\Http\Request;
 
 class InvitationController extends Controller
 {
-    public function __construct(protected InvitationRedemptionService $redemptionService, protected InvitationSearchService $searchService) {}
+    public function __construct(protected InvitationRedemptionService $redemptionService, protected InvitationSearchService $searchService)
+    {
+    }
 
     public function index(Request $request): JsonResponse
     {
@@ -25,13 +28,28 @@ class InvitationController extends Controller
     {
         try {
             $invitation = $this->redemptionService->redeem($hash);
+            $invitation->load('event');
 
-            // TODO: change after background job
             return response()->json([
-                'data' => $invitation->load('tickets'),
+                'data' => $invitation,
+                'message' => 'Invitation redeemed successfully. Tickets are being generated.',
+                'tickets_url' => url("/api/invitations/{$invitation->external_id}/tickets"),
             ], 201);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 422);
         }
+    }
+
+    public function getTickets(Invitation $invitation): JsonResponse
+    {
+        $ticketsCount = $invitation->tickets()->count();
+
+        return response()->json([
+            'invitation_id' => $invitation->id,
+            'expected_tickets' => $invitation->guest_count,
+            'generated_tickets' => $ticketsCount,
+            /* 'status' => $ticketsCount === $invitation->guest_count ? 'completed' : 'processing', */
+            'tickets' => $invitation->tickets,
+        ]);
     }
 }
