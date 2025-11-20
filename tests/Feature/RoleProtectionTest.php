@@ -1,8 +1,9 @@
 <?php
 
+use App\Enums\TicketStatus;
 use App\Enums\UserRole;
-use App\Models\User;
 use App\Models\Ticket;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Passport\Passport;
 
@@ -28,7 +29,7 @@ test('checker can validate tickets', function () {
     $user = User::factory()->create(['role' => UserRole::CHECKER->value]);
     Passport::actingAs($user);
 
-    $ticket = Ticket::factory()->create(['status' => 'unused']);
+    $ticket = Ticket::factory()->create(['status' => TicketStatus::UNUSED]);
 
     $this->postJson("/api/tickets/{$ticket->code}")
         ->assertStatus(201);

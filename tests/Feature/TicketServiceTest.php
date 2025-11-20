@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\TicketStatus;
 use App\Models\Event;
 use App\Models\Invitation;
 use App\Models\Ticket;
@@ -19,19 +20,19 @@ it('returns used tickets for a specific event', function () {
 
     $usedTicket = Ticket::factory()->create([
         'invitation_id' => $invitation->id,
-        'status' => 'used',
+        'status' => TicketStatus::USED,
         'used_at' => now(),
     ]);
 
     Ticket::factory()->create([
         'invitation_id' => $invitation->id,
-        'status' => 'unused',
+        'status' => TicketStatus::UNUSED,
         'used_at' => null,
     ]);
 
     Ticket::factory()->create([
         'invitation_id' => $otherInvitation->id,
-        'status' => 'used',
+        'status' => TicketStatus::USED,
         'used_at' => now(),
     ]);
 
@@ -48,7 +49,7 @@ it('respects page size parameter', function () {
 
     Ticket::factory()->count(5)->create([
         'invitation_id' => $invitation->id,
-        'status' => 'used',
+        'status' => TicketStatus::USED,
         'used_at' => now(),
     ]);
 
@@ -65,7 +66,7 @@ it('respects page parameter', function () {
 
     $tickets = Ticket::factory()->count(5)->create([
         'invitation_id' => $invitation->id,
-        'status' => 'used',
+        'status' => TicketStatus::USED,
         'used_at' => now(),
     ]);
 

@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Enums\InvitationStatus;
+use App\Enums\TicketStatus;
 use App\Models\Invitation;
 use App\Models\Ticket;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -20,8 +21,7 @@ class GenerateInvitationTickets implements ShouldQueue
      */
     public function __construct(
         public Invitation $invitation
-    ) {
-    }
+    ) {}
 
     /**
      * Execute the job.
@@ -46,7 +46,7 @@ class GenerateInvitationTickets implements ShouldQueue
             $tickets[] = [
                 'invitation_id' => $this->invitation->id,
                 'code' => Str::uuid(),
-                'status' => 'unused',
+                'status' => TicketStatus::UNUSED->value,
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
@@ -61,7 +61,7 @@ class GenerateInvitationTickets implements ShouldQueue
 
     public function failed(Throwable $ex)
     {
-        Log::error("Failed to generate tickets for {$this->invitation->external_id}: " . $ex->getMessage());
+        Log::error("Failed to generate tickets for {$this->invitation->external_id}: ".$ex->getMessage());
         $this->invitation->status = InvitationStatus::FAILED;
         $this->invitation->save();
     }

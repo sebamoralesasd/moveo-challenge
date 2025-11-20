@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\TicketStatus;
 use App\Models\Ticket;
 
 class TicketValidationService
@@ -12,11 +13,11 @@ class TicketValidationService
         if (! $ticket) {
             throw new \Exception("Ticket {$code} not found");
         }
-        if ($ticket->status === 'used') {
+        if ($ticket->status === TicketStatus::USED) {
             throw new \Exception("Ticket {$ticket->code} was already used");
         }
 
-        $ticket->status = 'used';
+        $ticket->status = TicketStatus::USED;
         $ticket->used_at = now();
         $ticket->save();
 

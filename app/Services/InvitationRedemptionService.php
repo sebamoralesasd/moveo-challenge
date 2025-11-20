@@ -11,9 +11,7 @@ use Illuminate\Support\Facades\Log;
 
 class InvitationRedemptionService
 {
-    public function __construct(protected ExternalInvitationService $external)
-    {
-    }
+    public function __construct(protected ExternalInvitationService $external) {}
 
     public function redeem(string $hash): Invitation
     {

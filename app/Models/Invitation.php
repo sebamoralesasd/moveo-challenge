@@ -20,7 +20,7 @@ class Invitation extends Model
     protected function casts(): array
     {
         return [
-            'status' => InvitationStatus::class
+            'status' => InvitationStatus::class,
         ];
     }
 

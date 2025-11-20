@@ -42,7 +42,6 @@ it('creates tickets with correct invitation_id', function () {
     expect($tickets->every(fn ($ticket) => $ticket->invitation_id === $invitation->id))->toBeTrue();
 });
 
-
 it('does not create duplicate tickets if run multiple times', function () {
     $invitation = Invitation::factory()->create(['guest_count' => 2]);
 

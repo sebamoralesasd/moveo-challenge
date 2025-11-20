@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Enums\TicketStatus;
+use App\Models\Invitation;
+use App\Models\Ticket;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
-use App\Models\Ticket;
-use App\Models\Invitation;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Ticket>
@@ -13,6 +14,7 @@ use App\Models\Invitation;
 class TicketFactory extends Factory
 {
     protected $model = Ticket::class;
+
     /**
      * Define the model's default state.
      *
@@ -21,9 +23,10 @@ class TicketFactory extends Factory
     public function definition(): array
     {
         $invitation = Invitation::factory()->create();
+
         return [
             'code' => Str::random(8),
-            'status' => $this->faker->randomElement(['unused', 'used']),
+            'status' => $this->faker->randomElement([TicketStatus::UNUSED, TicketStatus::USED]),
             // used_at nullable
             // validated_by nullable
             'invitation_id' => $invitation->id,

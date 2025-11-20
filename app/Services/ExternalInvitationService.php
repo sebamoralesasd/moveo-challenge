@@ -36,7 +36,8 @@ class ExternalInvitationService
                 $response = Http::withToken($token)
                     ->timeout(self::TIMEOUT_SECONDS)
                     ->retry(self::RETRY_TIMES, self::RETRY_SLEEP_MS, function ($exception, $request) use ($hash) {
-                        Log::warning("Retrying fetching invitation [{$hash}] due to: " . $exception->getMessage());
+                        Log::warning("Retrying fetching invitation [{$hash}] due to: ".$exception->getMessage());
+
                         return true;
                     })
                     ->get("{$baseUrl}/{$hash}")

@@ -31,6 +31,7 @@ class AuthController extends Controller
             'role' => $validated['role'],
         ]);
         $token = $user->createToken('authToken')->accessToken;
+
         return response()->json([
             'user' => $user,
             'token' => $token,
@@ -46,12 +47,13 @@ class AuthController extends Controller
             'email' => ['required', 'email'],
             'password' => ['required', 'string'],
         ]);
-        if (!Auth::attempt($credentials)) {
+        if (! Auth::attempt($credentials)) {
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
         /** @var User $user */
         $user = Auth::user();
         $token = $user->createToken('authToken')->accessToken;
+
         return response()->json([
             'user' => $user,
             'token' => $token,

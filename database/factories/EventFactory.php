@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\Event;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Event>
@@ -11,6 +11,7 @@ use App\Models\Event;
 class EventFactory extends Factory
 {
     protected $model = Event::class;
+
     /**
      * Define the model's default state.
      *
@@ -19,8 +20,8 @@ class EventFactory extends Factory
     public function definition(): array
     {
         return [
-           'name' => $this->faker->name(),
-           'date' => $this->faker->dateTimeBetween('+1 week', '+1 year'),
+            'name' => $this->faker->name(),
+            'date' => $this->faker->dateTimeBetween('+1 week', '+1 year'),
         ];
     }
 }

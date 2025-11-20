@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\TicketStatus;
 use App\Models\Ticket;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -13,7 +14,7 @@ class TicketService
             ->whereHas('invitation', function ($query) use ($eventId) {
                 $query->where('event_id', $eventId);
             })
-            ->where('status', 'used')
+            ->where('status', TicketStatus::USED)
             ->with('invitation') // Eager load to prevent N+1 queries.
             ->paginate($perPage, ['*'], 'page', $page);
     }

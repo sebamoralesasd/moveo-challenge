@@ -4,13 +4,13 @@ namespace Tests\Feature;
 
 use App\Enums\UserRole;
 use App\Models\Invitation;
+use App\Models\User;
 use App\Services\InvitationRedemptionService;
 use App\Services\InvitationSearchService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Mockery\MockInterface;
-use App\Models\User;
 use Laravel\Passport\Passport;
+use Mockery\MockInterface;
 
 uses(RefreshDatabase::class);
 
@@ -83,10 +83,9 @@ it('passes pagination parameters to search service', function () {
             ->andReturn($paginator);
     });
 
-    $response = $this->getJson("/api/invitations?per_page=5&page=2");
+    $response = $this->getJson('/api/invitations?per_page=5&page=2');
     $response->assertStatus(200);
 });
-
 
 // POST /invitations/{hash}/redeem
 it('redeems invitation successfully', function () {

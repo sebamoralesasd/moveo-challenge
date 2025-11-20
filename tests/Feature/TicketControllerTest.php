@@ -4,11 +4,11 @@ namespace Tests\Feature;
 
 use App\Enums\UserRole;
 use App\Models\Ticket;
+use App\Models\User;
 use App\Services\TicketService;
 use App\Services\TicketValidationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Pagination\LengthAwarePaginator;
-use App\Models\User;
 use Laravel\Passport\Passport;
 use Mockery\MockInterface;
 

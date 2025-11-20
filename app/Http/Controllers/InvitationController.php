@@ -10,9 +10,7 @@ use Illuminate\Http\Request;
 
 class InvitationController extends Controller
 {
-    public function __construct(protected InvitationRedemptionService $redemptionService, protected InvitationSearchService $searchService)
-    {
-    }
+    public function __construct(protected InvitationRedemptionService $redemptionService, protected InvitationSearchService $searchService) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -43,7 +41,7 @@ class InvitationController extends Controller
     public function getTickets(string $hash): JsonResponse
     {
         $invitation = Invitation::where('external_id', $hash)->first();
-        if (!$invitation) {
+        if (! $invitation) {
             return response()->json(['error' => "Invitation {$hash} not found"], 404);
         }
 

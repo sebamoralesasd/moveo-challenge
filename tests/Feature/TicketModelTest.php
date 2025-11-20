@@ -28,7 +28,6 @@ it('creates tickets with unique codes', function () {
     expect(count($ticket_codes))->toBe(count(array_unique($ticket_codes)));
 });
 
-
 // Relationships
 it('belongs to an Invitation', function () {
     $invitation = Invitation::factory()->create();

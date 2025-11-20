@@ -10,7 +10,7 @@ use Laravel\Passport\ClientRepository;
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    $clientRepository = new ClientRepository();
+    $clientRepository = new ClientRepository;
     $clientRepository->createPersonalAccessGrantClient('Test Personal Access Client');
 });
 
