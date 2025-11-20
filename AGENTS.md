@@ -1,20 +1,21 @@
 # AGENTS Guidelines
 
-## Build & Test
-- **Setup**: `composer setup` (installs, migrates, builds assets)
-- **Test**: `php artisan test` (Pest)
+## Commands
+- **Build**: `composer setup` (installs dependencies, migrates, builds assets)
+- **Test**: `php artisan test` (runs all tests via Pest)
 - **Single Test**: `php artisan test --filter <TestName>`
-- **Lint/Fix**: `vendor/bin/pint` or `vendor/bin/php-cs-fixer fix`
+- **Lint**: `vendor/bin/pint` (Laravel preset) or `vendor/bin/php-cs-fixer fix`
 
-## Code Standards
-- **PHP**: 8.2+. Adhere to Laravel conventions (MVC).
-- **Organization**: Logic in Services/Actions, Controllers slim.
-- **Naming**: `PascalCase` classes, `camelCase` methods/variables.
-- **Database**: Use Eloquent Models & Factories. No hardcoded IDs.
-- **Types**: Use proper type hinting for params/returns where possible.
+## Code Style & Standards
+- **PHP**: 8.2+. Follow PSR-12 and Laravel conventions.
+- **Structure**: Keep Controllers slim. Business logic goes in `app/Services` or `app/Queries`.
+- **Naming**: `PascalCase` for classes, `camelCase` for methods/variables.
+- **Types**: Strict typing. Use return types (`: void`, `: string`) and property types.
+- **Database**: Use Eloquent Models & Factories. Avoid raw SQL. No hardcoded IDs.
+- **Safety**: Validate inputs via FormRequests. Throw Exceptions instead of returning false.
+- **Formatting**: Use standard Laravel imports order (facades first).
 
 ## Workflow
-- **Dependencies**: Verify in `composer.json` before using libraries.
-- **Safety**: Validate all inputs. Prefer Exceptions over null/false.
-- **Testing**: Create Feature/Unit tests using Pest.
-- **Context**: Search codebase patterns before implementing new features.
+- **Context**: Search (`grep`/`glob`) existing patterns (e.g. `Services/`) before coding.
+- **Testing**: Write Feature/Unit tests (Pest) for all new logic. Verify with `php artisan test`.
+- **Dependencies**: Check `composer.json` before adding libraries.

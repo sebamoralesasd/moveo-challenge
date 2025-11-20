@@ -12,7 +12,7 @@ class Invitation extends Model
     use HasFactory;
 
     protected $fillable = [
-        'external_hash', 'external_id', 'guest_count', 'sector', // 'redeemed_at',
+        'external_id', 'guest_count', 'sector',
         'event_id',
     ];
 

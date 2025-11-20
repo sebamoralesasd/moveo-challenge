@@ -16,7 +16,7 @@ class InvitationSeeder extends Seeder
         ]);
 
         Invitation::firstOrCreate([
-            'external_hash' => 'demo-hash-123',
+            'external_id' => 'demo-hash-123',
         ], [
             'external_id' => 'demo-inv-1',
             'guest_count' => 2,

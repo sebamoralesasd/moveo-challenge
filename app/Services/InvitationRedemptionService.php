@@ -11,11 +11,13 @@ use Illuminate\Support\Str;
 
 class InvitationRedemptionService
 {
-    public function __construct(protected ExternalInvitationService $external) {}
+    public function __construct(protected ExternalInvitationService $external)
+    {
+    }
 
     public function redeem(string $hash): Invitation
     {
-        $invitation = Invitation::where('external_hash', $hash)->first();
+        $invitation = Invitation::where('external_id', $hash)->first();
         if ($invitation) {
             return $invitation;
         }
@@ -24,7 +26,8 @@ class InvitationRedemptionService
         $data = $this->external->getInvitation($hash);
 
         return DB::transaction(function () use ($hash, $data) {
-            $existing = Invitation::where('external_hash', $hash)->lockForUpdate()->first();
+            Log::info("Starting DB transaction");
+            $existing = Invitation::where('external_id', $hash)->lockForUpdate()->first();
             if ($existing) {
                 return $existing;
             }
@@ -33,7 +36,6 @@ class InvitationRedemptionService
                 'date' => $data['event_date'],
             ]);
             $invitation = Invitation::create([
-                'external_hash' => $hash,
                 'external_id' => $data['invitation_id'],
                 'guest_count' => $data['guest_count'],
                 'sector' => $data['sector'],

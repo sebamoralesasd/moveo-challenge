@@ -22,7 +22,6 @@ class InvitationFactory extends Factory
     {
         $event = Event::factory()->create();
         return [
-            'external_hash' => Str::random(8),
             'external_id' => Str::random(8),
             'guest_count' => $this->faker->numberBetween(1, 10),
             'sector' => $this->faker->randomElement(['General', 'VIP', 'Platea']),
