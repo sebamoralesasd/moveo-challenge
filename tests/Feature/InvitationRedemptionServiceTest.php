@@ -15,7 +15,7 @@ uses(RefreshDatabase::class);
 it('returns existing invitation without calling external service', function () {
     $hash = 'hash';
     $existingInvitation = Invitation::factory()->create([
-        'external_hash' => $hash,
+        'external_id' => $hash,
     ]);
 
     $this->mock(ExternalInvitationService::class, function (MockInterface $mock) {
@@ -26,7 +26,7 @@ it('returns existing invitation without calling external service', function () {
     $result = $service->redeem($hash);
 
     expect($result->id)->toBe($existingInvitation->id)
-        ->and($result->external_hash)->toBe($hash);
+        ->and($result->external_id)->toBe($hash);
 });
 
 it('throws exception and creates nothing when external service fails', function () {
@@ -71,7 +71,7 @@ it('creates invitation, tickets and new event successfully', function () {
     expect($event)->not->toBeNull();
 
     expect($result->event_id)->toBe($event->id)
-        ->and($result->external_hash)->toBe($hash)
+        ->and($result->external_id)->toBe($hash)
         ->and($result->guest_count)->toBe(2);
 
     expect(Ticket::where('invitation_id', $result->id)->count())->toBe(2);
@@ -138,7 +138,7 @@ it('rolls back invitation creation if ticket creation fails', function () {
         // Expected exception
     }
 
-    expect(Invitation::where('external_hash', $hash)->count())->toBe(0);
+    expect(Invitation::where('external_id', $hash)->count())->toBe(0);
     expect(Event::count())->toBe(0);
 
     // Clean up model event listener to not affect other tests

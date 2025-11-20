@@ -13,7 +13,6 @@ uses(RefreshDatabase::class);
 it('creates an Invitation with the factory and has valid attributes', function () {
     $invitation = Invitation::factory()->make();
     expect($invitation)->toBeInstanceOf(Invitation::class);
-    expect($invitation->external_hash)->not->toBeEmpty();
     expect($invitation->external_id)->not->toBeEmpty();
     expect($invitation->guest_count)->not->toBeEmpty();
     // TODO: validate enum

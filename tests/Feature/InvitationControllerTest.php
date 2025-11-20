@@ -8,11 +8,14 @@ use App\Services\InvitationSearchService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Mockery\MockInterface;
+use App\Models\User;
+use Laravel\Passport\Passport;
 
 uses(RefreshDatabase::class);
 
 // GET /invitations
 it('returns invitations list', function () {
+    Passport::actingAs(User::factory()->create(['role' => 'admin']));
     $invitations = Invitation::factory()->count(3)->make();
     $paginator = new LengthAwarePaginator($invitations, 3, 10);
 
@@ -38,6 +41,7 @@ it('returns invitations list', function () {
 });
 
 it('passes filters to search service', function () {
+    Passport::actingAs(User::factory()->create(['role' => 'admin']));
     $invitations = Invitation::factory()->count(1)->make();
     $paginator = new LengthAwarePaginator($invitations, 1, 10);
     $eventId = 123;
@@ -64,7 +68,7 @@ it('passes filters to search service', function () {
 // POST /invitations/{hash}/redeem
 it('redeems invitation successfully', function () {
     $hash = 'hash';
-    $invitation = Invitation::factory()->create(['external_hash' => $hash]);
+    $invitation = Invitation::factory()->create(['external_id' => $hash]);
 
     $this->mock(InvitationRedemptionService::class, function (MockInterface $mock) use ($hash, $invitation) {
         $mock->shouldReceive('redeem')
@@ -81,7 +85,7 @@ it('redeems invitation successfully', function () {
             'data' => [
                 'id',
                 'tickets',
-                'external_hash',
+                'external_id',
             ],
         ]);
 });
