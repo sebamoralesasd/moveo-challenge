@@ -40,8 +40,13 @@ class InvitationController extends Controller
         }
     }
 
-    public function getTickets(Invitation $invitation): JsonResponse
+    public function getTickets(string $hash): JsonResponse
     {
+        $invitation = Invitation::where('external_id', $hash)->first();
+        if (!$invitation) {
+            return response()->json(['error' => "Invitation {$hash} not found"], 404);
+        }
+
         $ticketsCount = $invitation->tickets()->count();
 
         return response()->json([
