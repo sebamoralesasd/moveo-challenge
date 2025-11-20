@@ -25,7 +25,8 @@ it('returns invitations list', function () {
             ->once()
             ->with(
                 [], // Empty filters
-                10  // Default perPage
+                10,  // Default perPage
+                1   // Default page
             )
             ->andReturn($paginator);
     });
@@ -56,12 +57,33 @@ it('passes filters to search service', function () {
                     'event_id' => (string) $eventId,
                     'sector' => $sector,
                 ]),
-                10 // Default is 10
+                10, // Default is 10
+                1  // Default page is 1
             )
             ->andReturn($paginator);
     });
 
     $response = $this->getJson("/api/invitations?event_id={$eventId}&sector={$sector}");
+    $response->assertStatus(200);
+});
+
+it('passes pagination parameters to search service', function () {
+    Passport::actingAs(User::factory()->create(['role' => UserRole::ADMIN->value]));
+    $invitations = Invitation::factory()->count(1)->make();
+    $paginator = new LengthAwarePaginator($invitations, 1, 5, 2);
+
+    $this->mock(InvitationSearchService::class, function (MockInterface $mock) use ($paginator) {
+        $mock->shouldReceive('search')
+            ->once()
+            ->with(
+                [],
+                5, // perPage
+                2  // page
+            )
+            ->andReturn($paginator);
+    });
+
+    $response = $this->getJson("/api/invitations?per_page=5&page=2");
     $response->assertStatus(200);
 });
 

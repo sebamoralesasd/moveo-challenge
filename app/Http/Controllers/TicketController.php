@@ -31,7 +31,8 @@ class TicketController extends Controller
     public function getUsed(Request $request, int $eventId): JsonResponse
     {
         $perPage = $request->input('per_page', 10);
-        $tickets = $this->ticketService->getUsedTicketsForEvent($eventId, (int) $perPage);
+        $page = $request->input('page', 1);
+        $tickets = $this->ticketService->getUsedTicketsForEvent($eventId, (int) $perPage, (int) $page);
 
         return response()->json($tickets);
     }

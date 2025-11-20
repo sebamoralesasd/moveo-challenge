@@ -29,6 +29,18 @@ it('paginates results correctly', function () {
     expect($results->total())->toBe(5);
 });
 
+it('respects page parameter', function () {
+    $invitations = Invitation::factory()->count(5)->create()->sortByDesc('created_at')->values();
+
+    $service = new InvitationSearchService;
+    // Get second page with 2 items per page (items 3 and 4)
+    $results = $service->search([], 2, 2);
+
+    expect($results->currentPage())->toBe(2);
+    expect($results->items())->toHaveCount(2);
+    expect($results->items()[0]->id)->toBe($invitations[2]->id);
+});
+
 it('filters invitations by event', function () {
     $event1 = Event::factory()->create();
     $event2 = Event::factory()->create();

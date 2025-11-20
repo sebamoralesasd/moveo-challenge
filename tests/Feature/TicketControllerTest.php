@@ -65,7 +65,7 @@ it('returns used tickets for an event', function () {
     $this->mock(TicketService::class, function (MockInterface $mock) use ($eventId, $paginator) {
         $mock->shouldReceive('getUsedTicketsForEvent')
             ->once()
-            ->with($eventId, 10)
+            ->with($eventId, 10, 1)
             ->andReturn($paginator);
     });
 
@@ -90,7 +90,7 @@ it('returns used tickets for an event with custom page size', function () {
     $this->mock(TicketService::class, function (MockInterface $mock) use ($eventId, $perPage, $paginator) {
         $mock->shouldReceive('getUsedTicketsForEvent')
             ->once()
-            ->with($eventId, $perPage)
+            ->with($eventId, $perPage, 1)
             ->andReturn($paginator);
     });
 

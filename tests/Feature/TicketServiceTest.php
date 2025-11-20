@@ -58,3 +58,22 @@ it('respects page size parameter', function () {
     expect($results->perPage())->toBe(2);
     expect($results->items())->toHaveCount(2);
 });
+
+it('respects page parameter', function () {
+    $event = Event::factory()->create();
+    $invitation = Invitation::factory()->create(['event_id' => $event->id]);
+
+    $tickets = Ticket::factory()->count(5)->create([
+        'invitation_id' => $invitation->id,
+        'status' => 'used',
+        'used_at' => now(),
+    ]);
+
+    $service = new TicketService;
+    // Get second page with 2 items per page (items 3 and 4)
+    $results = $service->getUsedTicketsForEvent($event->id, 2, 2);
+
+    expect($results->currentPage())->toBe(2);
+    expect($results->items())->toHaveCount(2);
+    expect($results->items()[0]->id)->toBe($tickets[2]->id);
+});

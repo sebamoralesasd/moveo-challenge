@@ -15,7 +15,8 @@ class InvitationController extends Controller
     {
         $filters = $request->only(['event_id', 'sector', 'date_from', 'date_to']);
         $perPage = $request->input('per_page', 10);
-        $results = $this->searchService->search($filters, (int) $perPage);
+        $page = $request->input('page', 1);
+        $results = $this->searchService->search($filters, (int) $perPage, (int) $page);
 
         return response()->json($results);
     }
