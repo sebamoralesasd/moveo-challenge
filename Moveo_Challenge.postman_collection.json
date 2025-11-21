@@ -1,0 +1,487 @@
+{
+	"info": {
+		"_postman_id": "b3f2e5c4-8b2a-4e5d-9f8a-1c2b3d4e5f6a",
+		"name": "Moveo Challenge",
+		"description": "Collection for Moveo Challenge API including Auth, Admin, and Checker endpoints.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register (Admin)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.token) {",
+									"    pm.collectionVariables.set(\"token\", jsonData.token);",
+									"    console.log(\"Token set successfully\");",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Admin User\",\n    \"email\": \"admin@example.com\",\n    \"password\": \"password\",\n    \"role\": \"admin\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register (Checker)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.token) {",
+									"    pm.collectionVariables.set(\"token\", jsonData.token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Checker User\",\n    \"email\": \"checker@example.com\",\n    \"password\": \"password\",\n    \"role\": \"checker\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.token) {",
+									"    pm.collectionVariables.set(\"token\", jsonData.token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@example.com\",\n    \"password\": \"password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin Routes",
+			"item": [
+				{
+					"name": "List Invitations",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/invitations?per_page=10&page=1&event_id=1&sector=VIP&date_from=2025-01-01&date_to=2025-12-31",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"invitations"
+							],
+							"query": [
+								{
+									"key": "per_page",
+									"value": "10",
+									"description": "Number of results per page (default: 10)"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number (default: 1)"
+								},
+								{
+									"key": "event_id",
+									"value": "1",
+									"description": "Filter by event ID",
+									"disabled": true
+								},
+								{
+									"key": "sector",
+									"value": "VIP",
+									"description": "Filter by sector name",
+									"disabled": true
+								},
+								{
+									"key": "date_from",
+									"value": "2025-01-01",
+									"description": "Filter invitations created on or after this date (YYYY-MM-DD)",
+									"disabled": true
+								},
+								{
+									"key": "date_to",
+									"value": "2025-12-31",
+									"description": "Filter invitations created on or before this date (YYYY-MM-DD)",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Used Tickets",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/events/:eventId/tickets/used?per_page=10&page=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"events",
+								":eventId",
+								"tickets",
+								"used"
+							],
+							"query": [
+								{
+									"key": "per_page",
+									"value": "10",
+									"description": "Number of results per page (default: 10)"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number (default: 1)"
+								}
+							],
+							"variable": [
+								{
+									"key": "eventId",
+									"value": "1",
+									"description": "Event ID to get used tickets for"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Checker Routes",
+			"item": [
+				{
+					"name": "Validate Ticket",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/tickets/:code",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"tickets",
+								":code"
+							],
+							"variable": [
+								{
+									"key": "code",
+									"value": "TICKET_CODE_HERE"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Public Routes",
+			"item": [
+				{
+					"name": "Redeem Invitation",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/invitations/:hash/redeem",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"invitations",
+								":hash",
+								"redeem"
+							],
+							"variable": [
+								{
+									"key": "hash",
+									"value": "a8f22d"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Redeem Invitation - Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/invitations/a8f22d/redeem",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"invitations",
+										"a8f22d",
+										"redeem"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"body": "{\n    \"data\": {\n        \"id\": 1,\n        \"external_id\": \"a8f22d\",\n        \"guest_count\": 3,\n        \"sector\": \"VIP\",\n        \"event_id\": 1,\n        \"created_at\": \"2025-11-20T14:56:04.000000Z\",\n        \"updated_at\": \"2025-11-20T14:56:04.000000Z\",\n        \"event\": {\n            \"id\": 1,\n            \"name\": \"Summer Music Festival 2025\",\n            \"date\": \"2025-12-31T20:00:00.000000Z\",\n            \"created_at\": \"2025-11-20T14:56:04.000000Z\",\n            \"updated_at\": \"2025-11-20T14:56:04.000000Z\"\n        }\n    },\n    \"message\": \"Invitation redeemed successfully. Tickets are being generated.\",\n    \"tickets_url\": \"http://127.0.0.1:8000/api/invitations/a8f22d/tickets\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Invitation Tickets",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/invitations/:external_id/tickets",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"invitations",
+								":external_id",
+								"tickets"
+							],
+							"variable": [
+								{
+									"key": "external_id",
+									"value": "a8f22d"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Get Invitation Tickets - Success",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/invitations/a8f22d/tickets",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"invitations",
+										"a8f22d",
+										"tickets"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"body": "{\n    \"invitation_id\": 1,\n    \"expected_tickets\": 3,\n    \"generated_tickets\": 3,\n    \"tickets\": [\n        {\n            \"code\": \"550e8400-e29b-41d4-a716-446655440000\",\n            \"status\": \"unused\",\n            \"used_at\": null\n        },\n        {\n            \"code\": \"550e8400-e29b-41d4-a716-446655440001\",\n            \"status\": \"unused\",\n            \"used_at\": null\n        },\n        {\n            \"code\": \"550e8400-e29b-41d4-a716-446655440002\",\n            \"status\": \"unused\",\n            \"used_at\": null\n        }\n    ]\n}"
+						}
+					]
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://127.0.0.1:8000",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
