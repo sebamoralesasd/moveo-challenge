@@ -55,25 +55,9 @@ This API was developed for **MDS-Eventos**, an event organizing company, to mana
 
 ---
 
-## Architecture
+## Database Schema
 
-### Design Patterns Implemented
-
-1. **Service layer pattern**
-   - Business logic isolated in dedicated services
-
-2. **Query object pattern**
-   - Complex queries encapsulated in `InvitationSearchQuery`
-   - Reusable, testable query building
-
-3. **Job pattern (Async processing)**
-   - `GenerateInvitationTickets` job for async ticket creation
-   - Prevents blocking on invitation redemption
-
-
-### Database Schema
-
-TODO: dbdiagram
+![ERD](./erd.png)
 
 ---
 
@@ -135,12 +119,6 @@ CACHE_STORE=database
 ```bash
 # Start all services (server, queue worker, logs, vite)
 composer dev
-
-# Or individually:
-php artisan serve              # API server
-php artisan queue:listen       # Queue worker
-php artisan pail               # Real-time logs
-npm run dev                    # Vite dev server
 ```
 
 ---
@@ -212,17 +190,6 @@ Authorization: Bearer {token}
 ```bash
 # Run all tests
 composer test
-# or
-php artisan test
-
-# Run specific test file
-php artisan test tests/Feature/InvitationRedemptionServiceTest.php
-
-# Run single test by name
-php artisan test --filter "creates invitation and dispatches ticket generation job"
-
-# Run with coverage (requires Xdebug)
-php artisan test --coverage
 ```
 
 ---
@@ -236,30 +203,6 @@ The system integrates with the MDS-Eventos invitation service:
 **Endpoint:** `GET https://mds-events-main-nfwvz9.laravel.cloud/api/invitations/{hash}`  
 **Auth:** `Bearer secret123`
 
-### Implementation Details
-
-#### Resilience & Retry Logic
-```
-// ExternalInvitationService.php
-- 3 retry attempts with exponential backoff
-- Custom timeout: 5 seconds per request
-```
-
-#### Response Caching
-```
-- Cache TTL: 1 hour (configurable)
-- Reduces load on external API
-```
-
-### Fallback Strategy
-
-If external API is unavailable:
-1. Invitation redemption fails gracefully with error message
-2. Previously redeemed invitations remain accessible
-3. Ticket validation continues to work
-4. Errors logged for investigation
-5. Client can retry after backoff period
-
 ---
 
 ## Design Decisions
@@ -272,11 +215,6 @@ If external API is unavailable:
 - Immediate 201 response after creating invitation
 - `GenerateInvitationTickets` job dispatched to queue
 - Client polls `/invitations/{hash}/tickets` to check progress
-
-**Benefits:**
-- Fast API response times
-- Better user experience
-- Scalable for large guest counts
 
 ### Service Layer
 
@@ -301,28 +239,3 @@ If external API is unavailable:
 ## Additional Documentation
 - See `AGENTS.md` (for AI coding assistants)
 ---
-
-## Development Commands
-
-```bash
-# Code formatting (PSR-12)
-vendor/bin/pint
-
-# Run tests
-composer test
-
-# Clear caches
-php artisan config:clear
-php artisan cache:clear
-php artisan view:clear
-
-# Database
-php artisan migrate:fresh --seed    # Reset DB with seeders
-php artisan db:seed                 # Run seeders only
-
-# Queue management
-php artisan queue:work              # Process jobs
-php artisan queue:failed            # View failed jobs
-php artisan queue:retry all         # Retry failed jobs
-```
-
