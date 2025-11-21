@@ -6,7 +6,7 @@ REST API for managing guest access control during events with digital invitation
 
 - [Overview](#overview)
 - [Features](#features)
-- [Architecture](#architecture)
+- [Database schema](#database-schema)
 - [Installation](#installation)
 - [API Documentation](#api-documentation)
 - [Testing](#testing)
@@ -195,8 +195,6 @@ composer test
 ---
 
 ## External API Integration
-
-### Strategy
 
 The system integrates with the MDS-Eventos invitation service:
 
