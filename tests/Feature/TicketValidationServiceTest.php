@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Enums\TicketStatus;
 use App\Enums\UserRole;
+use App\Models\Invitation;
 use App\Models\Ticket;
 use App\Models\User;
 use App\Services\TicketValidationService;
@@ -69,5 +70,5 @@ it('returns tickets for a valid invitation', function () {
             'generated_tickets' => $tickets_amount,
             'invitation_id' => $invitation->id,
         ])
-        ->assertJsonCount(2, 'tickets');
+        ->assertJsonCount($tickets_amount, 'tickets');
 });
