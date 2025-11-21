@@ -101,6 +101,8 @@ composer setup
 # - copies .env.example to .env
 # - generates app key
 # - runs migrations
+# - creates Passport encryption keys
+# - creates Passport personal access client
 # - npm install & build
 ```
 
@@ -112,6 +114,7 @@ cp .env.example .env
 php artisan key:generate
 php artisan migrate
 php artisan passport:keys
+php artisan passport:client --personal --name="Personal Access Client"
 npm install && npm run build
 ```
 
