@@ -1,59 +1,325 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# MDS-Eventos Access Control API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+REST API for managing guest access control during events with digital invitations, ticket generation, and validation.
 
-## About Laravel
+## Table of contents
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- [Overview](#overview)
+- [Features](#features)
+- [Architecture](#architecture)
+- [Installation](#installation)
+- [API Documentation](#api-documentation)
+- [Testing](#testing)
+- [External API Integration](#external-api-integration)
+- [Design Decisions](#design-decisions)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Overview
 
-## Learning Laravel
+This API was developed for **MDS-Eventos**, an event organizing company, to manage guest access control. The system integrates with an external invitation service, generates access tickets, and validates them at event checkpoints.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### Key Responsibilities
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- Generate valid access tickets from external invitations
+- Validate tickets at entry checkpoints
+- Authenticate ticket checkers and administrators
+- Provide statistics and reports for event organizers
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Features
 
-### Premium Partners
+### Authentication & Authorization
+- **OAuth 2.0** via Laravel Passport
+- **Role-based access control** (Admin, Checker)
+- Token-based authentication for all protected routes
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### Public Endpoints
+- **Invitation redemption** - Query external API and generate tickets
+- **Ticket status** - Check generated tickets for an invitation
 
-## Contributing
+### Checker Features
+- **Ticket validation** - Mark tickets as used at event entrance
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Admin Features
+- **Invitation history** - View all redeemed invitations with filters (by event, sector, date range)
+- **Used tickets report** - Paginated list of validated tickets by event
 
-## Code of Conduct
+### Technical Highlights
+- **Asynchronous ticket generation** using Laravel Queues
+- **N+1 query prevention** with eager loading
+- **Service layer architecture** for business logic
+- **Retry logic** for external API calls 
+- **Response caching** for external API optimization
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+## Architecture
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Design Patterns Implemented
 
-## License
+1. **Service layer pattern**
+   - Business logic isolated in dedicated services
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+2. **Query object pattern**
+   - Complex queries encapsulated in `InvitationSearchQuery`
+   - Reusable, testable query building
+
+3. **Job pattern (Async processing)**
+   - `GenerateInvitationTickets` job for async ticket creation
+   - Prevents blocking on invitation redemption
+
+
+### Database Schema
+
+TODO: dbdiagram
+
+---
+
+## Installation
+
+### Prerequisites
+
+- PHP >= 8.2
+- Composer
+- SQLite or MySQL
+- Node.js & npm (for asset compilation)
+
+### Quick Setup
+
+```bash
+# Clone repository
+git clone <repository-url>
+cd moveo-challenge
+
+# Install dependencies and setup
+composer setup
+
+# This command runs:
+# - composer install
+# - copies .env.example to .env
+# - generates app key
+# - runs migrations
+# - npm install & build
+```
+
+### Manual Setup (Alternative)
+
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate
+php artisan passport:install
+npm install && npm run build
+```
+
+### Environment Configuration
+
+Update `.env` with external API credentials:
+
+```env
+INVITATION_BASE_URL="https://mds-events-main-nfwvz9.laravel.cloud/api/invitations"
+INVITATION_BEARER_TOKEN="secret123"
+
+QUEUE_CONNECTION=database  
+CACHE_STORE=database
+```
+
+### Development Server
+
+```bash
+# Start all services (server, queue worker, logs, vite)
+composer dev
+
+# Or individually:
+php artisan serve              # API server
+php artisan queue:listen       # Queue worker
+php artisan pail               # Real-time logs
+npm run dev                    # Vite dev server
+```
+
+---
+
+## API Documentation
+
+### Base URL
+```
+http://127.0.0.1:8000/api
+```
+
+### Postman Collection
+Import `Moveo_Challenge.postman_collection.json` for a complete API reference with examples.
+
+### Quick Reference
+
+#### Authentication
+```bash
+# Register
+POST /register
+Content-Type: application/json
+{
+  "name": "Admin User",
+  "email": "admin@example.com",
+  "password": "password",
+  "role": "admin"
+}
+
+# Login
+POST /login
+Content-Type: application/json
+{
+  "email": "admin@example.com",
+  "password": "password"
+}
+```
+
+#### Public Routes
+```bash
+# Redeem invitation (generates tickets)
+POST /invitations/{hash}/redeem
+
+# Get invitation tickets
+GET /invitations/{external_id}/tickets
+```
+
+#### Admin Routes (requires admin token)
+```bash
+# List invitations with filters (check available filters at Postman collection)
+GET /invitations?event_id=1&per_page=10&page=1
+
+# Get used tickets for event
+GET /events/{eventId}/tickets/used?per_page=10&page=1
+```
+
+#### Checker Routes (requires checker token)
+```bash
+# Validate ticket
+POST /tickets/{code}
+Authorization: Bearer {token}
+```
+
+---
+
+## Testing
+
+### Running Tests
+
+```bash
+# Run all tests
+composer test
+# or
+php artisan test
+
+# Run specific test file
+php artisan test tests/Feature/InvitationRedemptionServiceTest.php
+
+# Run single test by name
+php artisan test --filter "creates invitation and dispatches ticket generation job"
+
+# Run with coverage (requires Xdebug)
+php artisan test --coverage
+```
+
+---
+
+## External API Integration
+
+### Strategy
+
+The system integrates with the MDS-Eventos invitation service:
+
+**Endpoint:** `GET https://mds-events-main-nfwvz9.laravel.cloud/api/invitations/{hash}`  
+**Auth:** `Bearer secret123`
+
+### Implementation Details
+
+#### Resilience & Retry Logic
+```
+// ExternalInvitationService.php
+- 3 retry attempts with exponential backoff
+- Custom timeout: 5 seconds per request
+```
+
+#### Response Caching
+```
+- Cache TTL: 1 hour (configurable)
+- Reduces load on external API
+```
+
+### Fallback Strategy
+
+If external API is unavailable:
+1. Invitation redemption fails gracefully with error message
+2. Previously redeemed invitations remain accessible
+3. Ticket validation continues to work
+4. Errors logged for investigation
+5. Client can retry after backoff period
+
+---
+
+## Design Decisions
+
+### Async Ticket Generation
+
+**Problem:** Generating 100+ tickets blocks the redemption request.
+
+**Solution:** 
+- Immediate 201 response after creating invitation
+- `GenerateInvitationTickets` job dispatched to queue
+- Client polls `/invitations/{hash}/tickets` to check progress
+
+**Benefits:**
+- Fast API response times
+- Better user experience
+- Scalable for large guest counts
+
+### Service Layer
+
+**Problem:** Controllers become bloated with business logic.
+
+**Solution:**
+- Thin controllers delegate to services
+- Services contain all business logic
+- Easy to test, reuse, and maintain
+
+### Query Objects
+
+**Problem:** Complex filtering logic in controllers/models.
+
+**Solution:**
+- `InvitationSearchQuery` encapsulates filter logic
+- Reusable across endpoints
+- Testable in isolation
+
+---
+
+## Additional Documentation
+- See `AGENTS.md` (for AI coding assistants)
+---
+
+## Development Commands
+
+```bash
+# Code formatting (PSR-12)
+vendor/bin/pint
+
+# Run tests
+composer test
+
+# Clear caches
+php artisan config:clear
+php artisan cache:clear
+php artisan view:clear
+
+# Database
+php artisan migrate:fresh --seed    # Reset DB with seeders
+php artisan db:seed                 # Run seeders only
+
+# Queue management
+php artisan queue:work              # Process jobs
+php artisan queue:failed            # View failed jobs
+php artisan queue:retry all         # Retry failed jobs
+```
+
