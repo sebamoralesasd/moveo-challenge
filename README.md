@@ -79,15 +79,6 @@ cd moveo-challenge
 
 # Install dependencies and setup
 composer setup
-
-# This command runs:
-# - composer install
-# - copies .env.example to .env
-# - generates app key
-# - runs migrations
-# - creates Passport encryption keys
-# - creates Passport personal access client
-# - npm install & build
 ```
 
 ### Manual Setup (Alternative)
@@ -117,7 +108,7 @@ CACHE_STORE=database
 ### Development Server
 
 ```bash
-# Start all services (server, queue worker, logs, vite)
+# Start all services (server, queue worker, logs)
 composer dev
 ```
 
@@ -168,7 +159,7 @@ GET /invitations/{external_id}/tickets
 #### Admin Routes (requires admin token)
 ```bash
 # List invitations with filters (check available filters at Postman collection)
-GET /invitations?event_id=1&per_page=10&page=1
+GET /invitations?per_page=10&page=1
 
 # Get used tickets for event
 GET /events/{eventId}/tickets/used?per_page=10&page=1
