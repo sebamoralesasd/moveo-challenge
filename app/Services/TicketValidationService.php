@@ -18,6 +18,7 @@ class TicketValidationService
         }
 
         $ticket->status = TicketStatus::USED;
+        $ticket->validated_by = auth()->id();
         $ticket->used_at = now();
         $ticket->save();
 

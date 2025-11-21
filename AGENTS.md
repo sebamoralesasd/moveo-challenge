@@ -1,20 +1,23 @@
 # AGENTS Guidelines
 
-## Commands
-- **Build**: `composer setup` (installs dependencies, migrations, assets)
-- **Test**: `php artisan test` (runs Pest tests) or `composer test`
-- **Test Single**: `php artisan test --filter <TestName>`
-- **Lint**: `vendor/bin/pint` (Laravel preset)
+## Build/Lint/Test
+- Setup: `composer install` -> `cp .env.example .env`; `php artisan key:generate`; `npm ci && npm run build`
+- Dev: `composer dev` (server, queue, vite) or `php artisan serve` + `php artisan queue:work` + `npm run dev`
+- Test: `php artisan test` or `composer test` (clears config first)
+- Test Single: `php artisan test --filter TestName` (or `vendor/bin/pest --filter TestName`)
+- Lint/Format: `vendor/bin/pint`
 
-## Code Style & Standards
-- **PHP**: 8.2+. Follow PSR-12. Use strict typing and return types.
-- **Structure**: Slim Controllers. Logic in `app/Services` or `app/Queries`.
-- **Naming**: `PascalCase` for classes, `camelCase` for methods.
-- **Database**: Use Eloquent Models & Factories. Avoid raw SQL.
-- **Validation**: Use FormRequests. Throw Exceptions on failure.
-- **Security**: No hardcoded secrets. Use policies/gates for auth.
+## Code Style
+- PHP 8.2+, strict PSR-12; always declare return types
+- Imports: group by type (std, Illuminate, App), alphabetize within groups
+- Types: typed properties, constructor type hints; enums for fixed sets
+- Naming: PascalCase for classes/enums; camelCase for methods/vars; snake_case DB columns
+- Architecture: slim controllers; domain logic in `app/Services` and `app/Queries`
+- DB & Errors: Eloquent models + factories; avoid raw SQL; use `lockForUpdate()` for race conditions; throw descriptive `\Exception` messages
+- Auth/Logging: Laravel Passport; `CheckUserRole` middleware; `Log::info()` for traceability
+- Testing: Pest; `RefreshDatabase`; mocks via `$this->mock(...)`; factories for data
+- Tests: use Passport::actingAs(User::factory()->create(['role' => UserRole::ADMIN->value])) for admin context
 
-## Workflow
-- **Context**: Search (`grep`/`glob`) existing patterns/services first.
-- **Testing**: Write Feature/Unit tests (Pest) for all new logic.
-- **Dependencies**: Verify `composer.json` before adding new ones.
+## Cursor / Copilot
+- Cursor rules: none detected
+- Copilot rules: none detected

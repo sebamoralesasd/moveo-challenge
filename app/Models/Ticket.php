@@ -23,6 +23,11 @@ class Ticket extends Model
         ];
     }
 
+    public function validator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'validated_by');
+    }
+
     public function invitation(): BelongsTo
     {
         return $this->belongsTo(Invitation::class);
