@@ -47,3 +47,27 @@ it('stores the validator user when validating a ticket', function () {
 
     expect($result->validated_by)->toBe($checker->id);
 });
+
+// GET /invitation/{hash}/tickets
+it('returns an error when invitation hash is not valid', function () {
+    $hash = 'pepe';
+    $response = $this->getJson("/api/invitations/{$hash}/tickets");
+    $response->assertStatus(404)
+        ->assertJson(['error' => "Invitation {$hash} not found"]);
+});
+
+it('returns tickets for a valid invitation', function () {
+    $guest_count = 2;
+    $tickets_amount = 1;
+    $invitation = Invitation::factory()->create(['guest_count' => $guest_count]);
+    $tickets = Ticket::factory()->count($tickets_amount)->create(['invitation_id' => $invitation->id]);
+
+    $response = $this->getJson("/api/invitations/{$invitation->external_id}/tickets");
+    $response->assertStatus(200)
+        ->assertJson([
+            'expected_tickets' => $guest_count,
+            'generated_tickets' => $tickets_amount,
+            'invitation_id' => $invitation->id,
+        ])
+        ->assertJsonCount(2, 'tickets');
+});

@@ -10,7 +10,9 @@ use Illuminate\Http\Request;
 
 class InvitationController extends Controller
 {
-    public function __construct(protected InvitationRedemptionService $redemptionService, protected InvitationSearchService $searchService) {}
+    public function __construct(protected InvitationRedemptionService $redemptionService, protected InvitationSearchService $searchService)
+    {
+    }
 
     public function index(Request $request): JsonResponse
     {
@@ -51,8 +53,11 @@ class InvitationController extends Controller
             'invitation_id' => $invitation->id,
             'expected_tickets' => $invitation->guest_count,
             'generated_tickets' => $ticketsCount,
-            /* 'status' => $ticketsCount === $invitation->guest_count ? 'completed' : 'processing', */
-            'tickets' => $invitation->tickets,
+            'tickets' => $invitation->tickets->map(fn ($ticket) => [
+                'code' => $ticket->code,
+                'status' => $ticket->status,
+                'used_at' => $ticket->used_at,
+        ]),
         ]);
     }
 }
